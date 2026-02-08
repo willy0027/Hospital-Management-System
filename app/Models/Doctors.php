@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Doctors extends Model
 {
-    //
+      protected $fillable = ['user_id','speciality'];
 }

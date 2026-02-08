@@ -3,23 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
-use App\Models\Doctor;
 use App\Models\Patient;
 
 class AuthController extends Controller
 {
+    // PATIENT SELF-REGISTRATION
     public function register(Request $request)
     {
         $request->validate([
-            'name'       => 'required|string',
-            'email'      => 'required|email|unique:users,email',
-            'password'   => 'required|min:6',
-            'role'       => 'required|in:doctor,patient',
-            'phone'      => 'required_if:role,patient',
-            'speciality' => 'required_if:role,doctor',
-            'availability' => 'nullable|boolean'
+            'name'     => 'required|string',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|min:6',
+            'phone'    => 'required'
         ]);
 
         try {
@@ -29,49 +27,44 @@ class AuthController extends Controller
                     'name'     => $request->name,
                     'email'    => $request->email,
                     'password' => bcrypt($request->password),
-                    'role'     => $request->role
+                    'role'     => 'patient'
                 ]);
 
-                if ($request->role === 'doctor') {
-                    Doctor::create([
-                        'user_id' => $user->id,
-                        'speciality' => $request->speciality,
-                        'availability_status' => $request->availability ?? true
-                    ]);
-                }
-
-                if ($request->role === 'patient') {
-                    Patient::create([
-                        'user_id' => $user->id,
-                        'phone'   => $request->phone
-                    ]);
-                }
+                Patient::create([
+                    'user_id' => $user->id,
+                    'phone'   => $request->phone
+                ]);
             });
 
             return response()->json([
-                'message' => 'User registered successfully'
+                'message' => 'Patient registered successfully'
             ], 201);
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'User registration failed',
+                'message' => 'Registration failed',
                 'error'   => $e->getMessage()
             ], 500);
         }
     }
 
+    // LOGIN (ALL ROLES)
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required'
+        ]);
 
-
-    public function login(Request $request){
-        if(!Auth::attempt($request->only('email','password'))){
-            return response()->json(['error'=>'invalid credential'],401);
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
-        $token = $request->user()->createToken('api')->PlainTextToken;
+        $user = $request->user();
 
-        return response()->json(['token'=>$token,'role'=>$request->user()->role]);
+        return response()->json([
+            'token' => $user->createToken('api')->plainTextToken,
+            'role'  => $user->role
+        ]);
     }
 }
-
-
-
