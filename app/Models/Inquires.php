@@ -6,5 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Inquires extends Model
 {
-    //
+        protected $fillable = [
+            'patient_id',
+            'subject',
+            'message'
+
+    ];
 }
