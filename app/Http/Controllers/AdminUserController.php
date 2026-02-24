@@ -32,7 +32,7 @@ class AdminUserController extends Controller
                 Doctors::create([
                     'user_id'             => $user->id,
                     'speciality'          => $request->speciality,
-                    'availability_status' => true
+                    'availability' => true
                 ]);
             });
 

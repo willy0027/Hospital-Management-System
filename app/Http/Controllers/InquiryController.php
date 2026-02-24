@@ -25,15 +25,15 @@ public function index(){
     public function store(Request $request){
         $request->validate([
         
-            'subjec'=>'required|string|max:256',
+            'subject'=>'required|string|max:256',
             'message'=>'required|string'
         ]);
 
         Inquires::create([
-            'Patient_id'=>$request->user()->patient->id,
-            'subjec'=>$request->subject,
-            'message'=>$request->message,
-            'status'=>'new'
+            'patient_id'=>$request->user()->patient->id,
+            'subject'=>$request->subject,
+            'message'=>$request->message
+           
 
         ]);
 

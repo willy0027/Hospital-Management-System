@@ -11,6 +11,21 @@ class Patient extends Model
 
     protected $fillable = [
         'user_id',
-        'phone',
+        'phone'
     ];
+
+
+    public function user()
+{
+    return $this->belongsTo(\App\Models\User::class);
+    
+}
+
+
+public function appointments()
+{
+    return $this->hasMany(Appoitments::class);
+}
+
+
 }

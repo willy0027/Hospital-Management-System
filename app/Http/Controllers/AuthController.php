@@ -42,7 +42,7 @@ class AuthController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Registration failed',
+                'message' => 'Patient Registration failed',
                 'error'   => $e->getMessage()
             ], 500);
         }
